@@ -1,13 +1,8 @@
 import { useReducer, useRef } from "react";
-
-// board is represented as a 2D array
-type BoardState = boolean[][];
-
-// represents the placement of a single cell
-type Coord = { x: number; y: number };
+import { BoardState, Coord } from "@/types";
 
 // dispatch type for the board reducer
-type BoardDispatch =
+export type BoardDispatch =
   | { action: "toggle"; payload: { coord: Coord } }
   | {
       action: "game-tick";
@@ -104,6 +99,10 @@ const boardReducer = (boardState: BoardState, dispatch: BoardDispatch) => {
   return boardState;
 };
 
+/**
+ * Handles create and mutating the board's state.
+ * @param length length of grid. Cells = length^2
+ */
 export function useBoardState(length: number) {
   const [boardState, boardDispatch] = useReducer(
     boardReducer,

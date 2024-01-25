@@ -1,10 +1,16 @@
 "use client";
 import React, { useRef, useState } from "react";
 import { useBoardState } from "./hooks/useBoardState";
+import { Coord } from "@/types";
+import { usePaint } from "./hooks/usePaint";
 
 export default function Board() {
   const { boardState, boardDispatch, cacheBoard, loadCachedBoard } =
     useBoardState(20);
+
+  const { startPaint, onPaint, stopPaint } = usePaint((coord: Coord) =>
+    boardDispatch({ action: "toggle", payload: { coord } }),
+  );
 
   // tells UI elements if game is playing
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -53,12 +59,13 @@ export default function Board() {
     intervalRef.current = playInterval;
   };
 
+  // resets game state
   const clearGame = () => {
     boardDispatch({ action: "clear" });
   };
 
   return (
-    <div>
+    <div onMouseLeave={stopPaint}>
       {boardState.map((row, y) => (
         <div className="flex flex-row" key={y}>
           {row.map((state, x) => (
@@ -72,6 +79,9 @@ export default function Board() {
                 })
               }
               key={x}
+              onMouseDown={startPaint}
+              onMouseUp={stopPaint}
+              onMouseOver={() => onPaint({ x, y })}
             />
           ))}
         </div>
