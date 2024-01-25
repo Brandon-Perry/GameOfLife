@@ -3,7 +3,8 @@ import React, { useRef, useState } from "react";
 import { useBoardState } from "./hooks/useBoardState";
 
 export default function Board() {
-  const { boardState, boardDispatch } = useBoardState(10);
+  const { boardState, boardDispatch, cacheBoard, loadCachedBoard } =
+    useBoardState(20);
 
   // tells UI elements if game is playing
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -45,6 +46,7 @@ export default function Board() {
   // starts game
   const startPlaying = () => {
     setIsPlaying(true);
+    cacheBoard();
     const playInterval = setInterval(() => {
       onTick();
     }, 200);
@@ -77,6 +79,7 @@ export default function Board() {
       <button onClick={() => (isPlaying ? stopPlaying() : startPlaying())}>
         {isPlaying ? "Stop" : "Start"}
       </button>
+      <button onClick={() => loadCachedBoard()}>Reset</button>
       <button onClick={() => clearGame()}>Clear</button>
     </div>
   );

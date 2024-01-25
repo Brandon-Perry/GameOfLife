@@ -1,4 +1,4 @@
-import { useReducer } from "react";
+import { useReducer, useRef } from "react";
 
 // board is represented as a 2D array
 type BoardState = boolean[][];
@@ -15,7 +15,8 @@ type BoardDispatch =
         gameFunction: (params: { numAlive: number; state: boolean }) => boolean;
       };
     }
-  | { action: "clear" };
+  | { action: "clear" }
+  | { action: "setBoard"; payload: BoardState };
 
 // creates an empty board length x length
 const generateBoardInitialState = (length: number): BoardState =>
@@ -97,6 +98,8 @@ const boardReducer = (boardState: BoardState, dispatch: BoardDispatch) => {
     return newBoardState;
   } else if (dispatch.action === "clear") {
     return generateBoardInitialState(boardState.length);
+  } else if (dispatch.action === "setBoard") {
+    return dispatch.payload;
   }
   return boardState;
 };
@@ -107,8 +110,21 @@ export function useBoardState(length: number) {
     generateBoardInitialState(length),
   );
 
+  const _boardCacheRef = useRef<BoardState | null>(null);
+
+  const cacheBoard = () => {
+    _boardCacheRef.current = boardState;
+  };
+
+  const loadCachedBoard = () => {
+    if (_boardCacheRef.current === null) return;
+    boardDispatch({ action: "setBoard", payload: _boardCacheRef.current });
+  };
+
   return {
     boardState,
     boardDispatch,
+    cacheBoard,
+    loadCachedBoard,
   };
 }
