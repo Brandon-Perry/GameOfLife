@@ -71,7 +71,7 @@ export default function Board() {
           {row.map((state, x) => (
             <div
               style={{ height: 20, width: 20 }}
-              className={`${state ? "bg-black" : "bg-white"} hover:bg-slate-400 border border-black`}
+              className={`${state ? "bg-black" : "bg-white"} hover:bg-slate-400 border border-gray-200`}
               onClick={() =>
                 boardDispatch({
                   action: "toggle",
@@ -86,11 +86,24 @@ export default function Board() {
           ))}
         </div>
       ))}
-      <button onClick={() => (isPlaying ? stopPlaying() : startPlaying())}>
+      <button
+        className="p-2 bg-slate-400 rounded-md m-2"
+        onClick={() => (isPlaying ? stopPlaying() : startPlaying())}
+      >
         {isPlaying ? "Stop" : "Start"}
       </button>
-      <button onClick={() => loadCachedBoard()}>Reset</button>
-      <button onClick={() => clearGame()}>Clear</button>
+      <button
+        className="p-2 bg-slate-400 rounded-md m-2"
+        onClick={() => loadCachedBoard()}
+      >
+        Reset
+      </button>
+      <button
+        className="p-2 bg-slate-400 rounded-md m-2"
+        onClick={() => clearGame()}
+      >
+        Clear
+      </button>
     </div>
   );
 }
