@@ -71,7 +71,7 @@ export default function Board() {
           {row.map((state, x) => (
             <div
               style={{ height: 20, width: 20 }}
-              className={`${state ? "bg-black" : "bg-white"} hover:bg-slate-400 border border-gray-200`}
+              className={`${state ? "bg-black hover:bg-gray-500" : "bg-white hover:bg-gray-300"} hover:bg-slate-400 border border-gray-200`}
               onClick={() =>
                 boardDispatch({
                   action: "toggle",
