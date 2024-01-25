@@ -1,5 +1,5 @@
 "use client";
-import React, { useReducer } from "react";
+import React, { useReducer, useRef, useState } from "react";
 
 // board is represented as a 2D array
 type BoardState = boolean[][];
@@ -104,6 +104,53 @@ export default function Board() {
     boardReducer,
     generateBoardInitialState(10),
   );
+
+  // tells UI elements if game is playing
+  const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+  // stores id for shutting down setInterval for game loop
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  // runs on each game tick
+  const onTick = () => {
+    boardDispatch({
+      action: "game-tick",
+      payload: {
+        gameFunction(params) {
+          const { numAlive, state } = params;
+          switch (numAlive) {
+            case 2: {
+              if (state) return true;
+              return false;
+            }
+            case 3: {
+              return true;
+            }
+            default:
+              return false;
+          }
+        },
+      },
+    });
+  };
+
+  // stops game
+  const stopPlaying = () => {
+    setIsPlaying(false);
+    if (intervalRef.current === null) return;
+    clearInterval(intervalRef.current);
+    intervalRef.current = null;
+  };
+
+  // starts game
+  const startPlaying = () => {
+    setIsPlaying(true);
+    const playInterval = setInterval(() => {
+      onTick();
+    }, 200);
+    intervalRef.current = playInterval;
+  };
+
   return (
     <div>
       {boardState.map((row, y) => (
@@ -123,6 +170,9 @@ export default function Board() {
           ))}
         </div>
       ))}
+      <button onClick={() => (isPlaying ? stopPlaying() : startPlaying())}>
+        {isPlaying ? "Stop" : "Start"}
+      </button>
     </div>
   );
 }
