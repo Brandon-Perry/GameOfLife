@@ -7,7 +7,7 @@ import { Group, Layer, Rect, Stage } from "react-konva";
 
 export default function Board() {
   const { boardState, boardDispatch, cacheBoard, loadCachedBoard } =
-    useBoardState(35);
+    useBoardState(10);
 
   const { startPaint, onPaint, stopPaint } = usePaint((coord: Coord) =>
     boardDispatch({ action: "toggle", payload: { coord } }),
@@ -15,6 +15,9 @@ export default function Board() {
 
   // tells UI elements if game is playing
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
+
+  //
+  const [zoomFactor, setZoomFactor] = useState<number>(1);
 
   // stores id for shutting down setInterval for game loop
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -68,16 +71,16 @@ export default function Board() {
   return (
     <div onMouseLeave={stopPaint}>
       <Stage height={600} width={600}>
-        <Layer height={400} width={400}>
+        <Layer height={400 * zoomFactor} width={400 * zoomFactor}>
           {boardState.map((row, y) => (
             <Group>
               {row.map((state, x) => (
                 <Rect
-                  height={20}
-                  width={20}
+                  height={20 * zoomFactor}
+                  width={20 * zoomFactor}
                   fill={state ? "black" : "white"}
-                  x={20 * x}
-                  y={20 * y}
+                  x={20 * x * zoomFactor}
+                  y={20 * y * zoomFactor}
                   stroke={"gray"}
                   strokeWidth={1}
                   onClick={() =>
@@ -124,6 +127,14 @@ export default function Board() {
       >
         Clear
       </button>
+
+      <button onClick={() => setZoomFactor((curr) => curr + 0.2)}>
+        Zoom In
+      </button>
+      <button onClick={() => setZoomFactor((curr) => curr - 0.2)}>
+        Zoom Out
+      </button>
+      <text>{zoomFactor}</text>
     </div>
   );
 }
