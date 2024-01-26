@@ -3,10 +3,11 @@ import React, { useRef, useState } from "react";
 import { useBoardState } from "./hooks/useBoardState";
 import { Coord } from "@/types";
 import { usePaint } from "./hooks/usePaint";
+import { Group, Layer, Rect, Stage } from "react-konva";
 
 export default function Board() {
   const { boardState, boardDispatch, cacheBoard, loadCachedBoard } =
-    useBoardState(20);
+    useBoardState(35);
 
   const { startPaint, onPaint, stopPaint } = usePaint((coord: Coord) =>
     boardDispatch({ action: "toggle", payload: { coord } }),
@@ -66,26 +67,45 @@ export default function Board() {
 
   return (
     <div onMouseLeave={stopPaint}>
-      {boardState.map((row, y) => (
-        <div className="flex flex-row" key={y}>
-          {row.map((state, x) => (
-            <div
-              style={{ height: 20, width: 20 }}
-              className={`${state ? "bg-black hover:bg-gray-500" : "bg-white hover:bg-gray-300"} hover:bg-slate-400 border border-gray-200`}
-              onClick={() =>
-                boardDispatch({
-                  action: "toggle",
-                  payload: { coord: { x, y } },
-                })
-              }
-              key={x}
-              onMouseDown={startPaint}
-              onMouseUp={stopPaint}
-              onMouseOver={() => onPaint({ x, y })}
-            />
+      <Stage height={600} width={600}>
+        <Layer height={400} width={400}>
+          {boardState.map((row, y) => (
+            <Group>
+              {row.map((state, x) => (
+                <Rect
+                  height={20}
+                  width={20}
+                  fill={state ? "black" : "white"}
+                  x={20 * x}
+                  y={20 * y}
+                  stroke={"gray"}
+                  strokeWidth={1}
+                  onClick={() =>
+                    boardDispatch({
+                      action: "toggle",
+                      payload: { coord: { x, y } },
+                    })
+                  }
+                  key={x}
+                  onMouseDown={startPaint}
+                  onMouseUp={stopPaint}
+                  onMouseOver={(e) => {
+                    e.currentTarget.setAttr(
+                      "fill",
+                      state ? "#525454" : "#ebeded",
+                    );
+                    onPaint({ x, y });
+                  }}
+                  onMouseOut={(e) =>
+                    e.currentTarget.setAttr("fill", state ? "black" : "white")
+                  }
+                />
+              ))}
+            </Group>
           ))}
-        </div>
-      ))}
+        </Layer>
+      </Stage>
+
       <button
         className="p-2 bg-slate-400 rounded-md m-2"
         onClick={() => (isPlaying ? stopPlaying() : startPlaying())}
