@@ -22,6 +22,12 @@ const generateBoardInitialState = (length: number): BoardState =>
 const getCell = (boardState: BoardState, coord: Coord) =>
   boardState[coord.y][coord.x];
 
+const setCell = (boardState: BoardState, coord: Coord, value: boolean) => {
+  const board = boardState.map((row) => row.slice());
+  board[coord.y][coord.x] = value;
+  return board;
+};
+
 // helper functions for finding neighbors
 const top = (coord: Coord): Coord => ({ ...coord, y: coord.y + 1 });
 const bottom = (coord: Coord): Coord => ({ ...coord, y: coord.y - 1 });
@@ -48,28 +54,12 @@ const getValidNeigbors = (coord: Coord, length: number): Coord[] => {
 // reducer function for the board
 const boardReducer = (boardState: BoardState, dispatch: BoardDispatch) => {
   if (dispatch.action === "turnOn") {
-    // copy state
-    let newBoardState = boardState.map((row) => row.slice());
-
-    const { coord } = dispatch.payload;
-
-    // switch state to its opposite
-    newBoardState[coord.y][coord.x] = true;
-
-    return newBoardState;
+    return setCell(boardState, dispatch.payload.coord, true);
   }
   // toggle is when the user manipulates a single cell.
   else if (dispatch.action === "toggle") {
-    // copy state
-    let newBoardState = boardState.map((row) => row.slice());
-
     const { coord } = dispatch.payload;
-
-    // switch state to its opposite
-    newBoardState[coord.y][coord.x] = !getCell(boardState, coord);
-
-    return newBoardState;
-
+    return setCell(boardState, coord, !getCell(boardState, coord));
     // Game tick is for when the game is being played. Used at each step.
   } else if (dispatch.action === "game-tick") {
     // gameFunction applies the rules of the game. Determines alive/dead from number of live neighbors and cell's own state.
