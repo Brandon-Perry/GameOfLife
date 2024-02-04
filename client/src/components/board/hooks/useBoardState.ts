@@ -11,7 +11,8 @@ export type BoardDispatch =
       };
     }
   | { action: "clear" }
-  | { action: "setBoard"; payload: BoardState };
+  | { action: "setBoard"; payload: BoardState }
+  | { action: "turnOn"; payload: { coord: Coord } };
 
 // creates an empty board length x length
 const generateBoardInitialState = (length: number): BoardState =>
@@ -46,8 +47,19 @@ const getValidNeigbors = (coord: Coord, length: number): Coord[] => {
 
 // reducer function for the board
 const boardReducer = (boardState: BoardState, dispatch: BoardDispatch) => {
+  if (dispatch.action === "turnOn") {
+    // copy state
+    let newBoardState = boardState.map((row) => row.slice());
+
+    const { coord } = dispatch.payload;
+
+    // switch state to its opposite
+    newBoardState[coord.y][coord.x] = true;
+
+    return newBoardState;
+  }
   // toggle is when the user manipulates a single cell.
-  if (dispatch.action === "toggle") {
+  else if (dispatch.action === "toggle") {
     // copy state
     let newBoardState = boardState.map((row) => row.slice());
 

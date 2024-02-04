@@ -10,7 +10,7 @@ export default function Board() {
     useBoardState(10);
 
   const { startPaint, onPaint, stopPaint } = usePaint((coord: Coord) =>
-    boardDispatch({ action: "toggle", payload: { coord } }),
+    boardDispatch({ action: "turnOn", payload: { coord } }),
   );
 
   // tells UI elements if game is playing
