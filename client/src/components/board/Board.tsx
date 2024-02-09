@@ -2,6 +2,7 @@
 import React, {
   Ref,
   forwardRef,
+  useEffect,
   useImperativeHandle,
   useRef,
   useState,
@@ -10,6 +11,7 @@ import { useBoardState } from "./hooks/useBoardState";
 import { Coord } from "@/types";
 import { usePaint } from "./hooks/usePaint";
 import { Group, Layer, Rect, Stage } from "react-konva";
+import useBoardSize from "./hooks/useBoardSize";
 
 export type BoardRef = {
   start: () => void;
@@ -25,7 +27,7 @@ export default forwardRef(function Board(
   ref: Ref<BoardRef>,
 ) {
   const { boardState, boardDispatch, cacheBoard, loadCachedBoard } =
-    useBoardState(10);
+    useBoardState(65);
 
   const { startPaint, onPaint, stopPaint } = usePaint((coord: Coord) =>
     boardDispatch({ action: "turnOn", payload: { coord } }),
@@ -36,6 +38,10 @@ export default forwardRef(function Board(
 
   // stores id for shutting down setInterval for game loop
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const viewRef = useRef<HTMLDivElement | null>(null);
+
+  const { height, width } = useBoardSize(viewRef);
 
   useImperativeHandle<BoardProps, BoardRef>(ref, () => {
     return {
@@ -91,9 +97,9 @@ export default forwardRef(function Board(
   };
 
   return (
-    <div onMouseLeave={stopPaint}>
-      <Stage height={600} width={600}>
-        <Layer height={400 * zoomFactor} width={400 * zoomFactor}>
+    <div onMouseLeave={stopPaint} className="w-full" ref={viewRef}>
+      <Stage height={height} width={width}>
+        <Layer height={height} width={width}>
           {boardState.map((row, y) => (
             <Group>
               {row.map((state, x) => (

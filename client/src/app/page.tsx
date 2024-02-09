@@ -6,9 +6,9 @@ import { useRef } from "react";
 export default function Home() {
   const boardRef = useRef<BoardRef | null>(null);
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24 bg-slate-200">
-      <Board ref={boardRef} />
+    <main className="flex min-h-screen flex-rows bg-slate-200">
       <Controls boardRef={boardRef} />
+      <Board ref={boardRef} />
     </main>
   );
 }

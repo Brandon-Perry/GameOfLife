@@ -10,7 +10,7 @@ export default function Controls({
 }) {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   return (
-    <div>
+    <div className="p-5 bg-slate-500">
       <button
         className="p-2 bg-slate-400 rounded-md m-2"
         onClick={() => {
