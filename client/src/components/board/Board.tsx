@@ -1,11 +1,29 @@
 "use client";
-import React, { useRef, useState } from "react";
+import React, {
+  Ref,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import { useBoardState } from "./hooks/useBoardState";
 import { Coord } from "@/types";
 import { usePaint } from "./hooks/usePaint";
 import { Group, Layer, Rect, Stage } from "react-konva";
 
-export default function Board() {
+export type BoardRef = {
+  start: () => void;
+  stop: () => void;
+  reset: () => void;
+  clear: () => void;
+};
+
+type BoardProps = {};
+
+export default forwardRef(function Board(
+  props: BoardProps,
+  ref: Ref<BoardRef>,
+) {
   const { boardState, boardDispatch, cacheBoard, loadCachedBoard } =
     useBoardState(10);
 
@@ -13,14 +31,20 @@ export default function Board() {
     boardDispatch({ action: "turnOn", payload: { coord } }),
   );
 
-  // tells UI elements if game is playing
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-
   //
   const [zoomFactor, setZoomFactor] = useState<number>(1);
 
   // stores id for shutting down setInterval for game loop
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  useImperativeHandle<BoardProps, BoardRef>(ref, () => {
+    return {
+      start: () => startPlaying(),
+      stop: () => stopPlaying(),
+      clear: () => clearGame(),
+      reset: () => loadCachedBoard(),
+    };
+  });
 
   // runs on each game tick
   const onTick = () => {
@@ -47,7 +71,6 @@ export default function Board() {
 
   // stops game
   const stopPlaying = () => {
-    setIsPlaying(false);
     if (intervalRef.current === null) return;
     clearInterval(intervalRef.current);
     intervalRef.current = null;
@@ -55,7 +78,6 @@ export default function Board() {
 
   // starts game
   const startPlaying = () => {
-    setIsPlaying(true);
     cacheBoard();
     const playInterval = setInterval(() => {
       onTick();
@@ -108,33 +130,6 @@ export default function Board() {
           ))}
         </Layer>
       </Stage>
-
-      <button
-        className="p-2 bg-slate-400 rounded-md m-2"
-        onClick={() => (isPlaying ? stopPlaying() : startPlaying())}
-      >
-        {isPlaying ? "Stop" : "Start"}
-      </button>
-      <button
-        className="p-2 bg-slate-400 rounded-md m-2"
-        onClick={() => loadCachedBoard()}
-      >
-        Reset
-      </button>
-      <button
-        className="p-2 bg-slate-400 rounded-md m-2"
-        onClick={() => clearGame()}
-      >
-        Clear
-      </button>
-
-      <button onClick={() => setZoomFactor((curr) => curr + 0.2)}>
-        Zoom In
-      </button>
-      <button onClick={() => setZoomFactor((curr) => curr - 0.2)}>
-        Zoom Out
-      </button>
-      <text>{zoomFactor}</text>
     </div>
   );
-}
+});
