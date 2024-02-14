@@ -32,13 +32,6 @@ export default function Controls({
       >
         Clear
       </button>
-
-      {/* <button onClick={() => setZoomFactor((curr) => curr + 0.2)}>
-        Zoom In
-      </button>
-      <button onClick={() => setZoomFactor((curr) => curr - 0.2)}>
-        Zoom Out
-      </button> */}
     </div>
   );
 }

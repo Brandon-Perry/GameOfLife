@@ -1,12 +1,5 @@
 "use client";
-import React, {
-  Ref,
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+import React, { Ref, forwardRef, useImperativeHandle, useRef } from "react";
 import { useBoardState } from "./hooks/useBoardState";
 import { Coord } from "@/types";
 import { usePaint } from "./hooks/usePaint";
@@ -32,9 +25,6 @@ export default forwardRef(function Board(
   const { startPaint, onPaint, stopPaint } = usePaint((coord: Coord) =>
     boardDispatch({ action: "turnOn", payload: { coord } }),
   );
-
-  //
-  const [zoomFactor, setZoomFactor] = useState<number>(1);
 
   // stores id for shutting down setInterval for game loop
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -104,11 +94,11 @@ export default forwardRef(function Board(
             <Group>
               {row.map((state, x) => (
                 <Rect
-                  height={20 * zoomFactor}
-                  width={20 * zoomFactor}
+                  height={20}
+                  width={20}
                   fill={state ? "black" : "white"}
-                  x={20 * x * zoomFactor}
-                  y={20 * y * zoomFactor}
+                  x={20 * x}
+                  y={20 * y}
                   stroke={"gray"}
                   strokeWidth={1}
                   onClick={() =>
