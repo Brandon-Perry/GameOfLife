@@ -1,6 +1,36 @@
 import { useReducer, useRef } from "react";
 import { BoardState, Coord } from "@/types";
 
+/**
+ * Handles create and mutating the board's state.
+ * @param length length of grid. Cells = length^2
+ */
+export function useBoardState(length: number) {
+  // ! Using a reducer doesn't seem to work well once # of cells in around 100. Find alternative approach.
+  const [boardState, boardDispatch] = useReducer(
+    boardReducer,
+    generateBoardInitialState(length),
+  );
+
+  const _boardCacheRef = useRef<BoardState | null>(null);
+
+  const cacheBoard = () => {
+    _boardCacheRef.current = boardState;
+  };
+
+  const loadCachedBoard = () => {
+    if (_boardCacheRef.current === null) return;
+    boardDispatch({ action: "setBoard", payload: _boardCacheRef.current });
+  };
+
+  return {
+    boardState,
+    boardDispatch,
+    cacheBoard,
+    loadCachedBoard,
+  };
+}
+
 // dispatch type for the board reducer
 export type BoardDispatch =
   | { action: "toggle"; payload: { coord: Coord } }
@@ -100,32 +130,3 @@ const boardReducer = (boardState: BoardState, dispatch: BoardDispatch) => {
   }
   return boardState;
 };
-
-/**
- * Handles create and mutating the board's state.
- * @param length length of grid. Cells = length^2
- */
-export function useBoardState(length: number) {
-  const [boardState, boardDispatch] = useReducer(
-    boardReducer,
-    generateBoardInitialState(length),
-  );
-
-  const _boardCacheRef = useRef<BoardState | null>(null);
-
-  const cacheBoard = () => {
-    _boardCacheRef.current = boardState;
-  };
-
-  const loadCachedBoard = () => {
-    if (_boardCacheRef.current === null) return;
-    boardDispatch({ action: "setBoard", payload: _boardCacheRef.current });
-  };
-
-  return {
-    boardState,
-    boardDispatch,
-    cacheBoard,
-    loadCachedBoard,
-  };
-}

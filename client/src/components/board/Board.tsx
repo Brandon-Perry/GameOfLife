@@ -15,10 +15,7 @@ export type BoardRef = {
 
 type BoardProps = {};
 
-export default forwardRef(function Board(
-  props: BoardProps,
-  ref: Ref<BoardRef>,
-) {
+export default forwardRef(function Board(_: BoardProps, ref: Ref<BoardRef>) {
   const { boardState, boardDispatch, cacheBoard, loadCachedBoard } =
     useBoardState(65);
 
@@ -29,10 +26,13 @@ export default forwardRef(function Board(
   // stores id for shutting down setInterval for game loop
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  // ref for wrapping div to set Stage to proper dimensions
   const viewRef = useRef<HTMLDivElement | null>(null);
 
+  // handles how big the board UI window should be
   const { height, width } = useBoardSize(viewRef);
 
+  // establishes interface that controls board from outside.
   useImperativeHandle<BoardProps, BoardRef>(ref, () => {
     return {
       start: () => startPlaying(),
@@ -90,9 +90,13 @@ export default forwardRef(function Board(
     <div onMouseLeave={stopPaint} className="w-full" ref={viewRef}>
       <Stage height={height} width={width}>
         <Layer height={height} width={width}>
-          {boardState.map((row, y) => (
+          {/* 
+            Writes board to the screen from BoardState using Konva components.
+            Indices are x,y
+          */}
+          {boardState.map((row: boolean[], y) => (
             <Group>
-              {row.map((state, x) => (
+              {row.map((state: boolean, x) => (
                 <Rect
                   height={20}
                   width={20}
@@ -111,6 +115,7 @@ export default forwardRef(function Board(
                   onMouseDown={startPaint}
                   onMouseUp={stopPaint}
                   onMouseOver={(e) => {
+                    // ! Check and see if setAttr and onPaint conflict. Should rewrite to be a single function that does one not both.
                     e.currentTarget.setAttr(
                       "fill",
                       state ? "#525454" : "#ebeded",

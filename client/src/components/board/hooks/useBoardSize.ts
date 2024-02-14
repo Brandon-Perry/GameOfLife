@@ -4,8 +4,6 @@ type Size = { height: number; width: number };
 
 /**
  * Returns the size that the board should be based on its wrapper div
- * @param ref
- * @returns
  */
 export default function useBoardSize(
   ref: MutableRefObject<HTMLElement | null>,
@@ -15,7 +13,7 @@ export default function useBoardSize(
   useEffect(() => {
     if (ref.current === null) return;
     const observer = new ResizeObserver((element) => {
-      console.log("changed");
+      // TODO Review for better approach. Element[0] seems off.
       setSize(() => ({
         height: element[0].target.clientHeight,
         width: element[0].target.clientWidth,

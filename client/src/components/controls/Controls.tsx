@@ -14,6 +14,7 @@ export default function Controls({
       <button
         className="p-2 bg-slate-400 rounded-md m-2"
         onClick={() => {
+          // ! Having button's UI state and game status separate could be an issue. setIsPlaying should control state.
           isPlaying ? boardRef.current?.stop() : boardRef.current?.start();
           setIsPlaying((curr) => !curr);
         }}
